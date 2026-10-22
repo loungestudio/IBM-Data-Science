@@ -1,0 +1,20 @@
+Inventario de las cinco respuestas:
+
+Pregunta	                                                                           Resultado
+-----------------------------------------------------------------------------------------------------------
+
+Más lanzamientos exitosos por lugar	                            KSC LC-39A: 10
+Mayor tasa de éxito por lugar	                                        KSC LC-39A: 76,92 %
+Mayor tasa por carga	                                                   1.000–5.000 kg: 53,12 %
+Menor tasa por carga	                                                   Hasta 1.000 kg: 20 %
+Mayor tasa por versión	B5:                                              100 %
+
+
+Código
+----------
+
+python3.11 -c "import pandas as pd; df = pd.read_csv('spacex_launch_dash.csv'); print(df.columns.tolist()); print(df.head())"
+
+python3.11 -c "import pandas as pd; df = pd.read_csv('spacex_launch_dash.csv'); print('\n1. Éxitos por lugar:\n', df.groupby('Launch Site')['class'].sum().sort_values(ascending=False)); print('\n2. Tasa de éxito por lugar (%):\n', (df.groupby('Launch Site')['class'].mean()*100).sort_values(ascending=False).round(2)); print('\n3-4. Tasa de éxito por carga (intervalos de 10.000 kg):\n', (df.assign(Rango=pd.cut(df['Payload Mass (kg)'], bins=range(0, int(df['Payload Mass (kg)'].max())+10000, 10000), right=False)) .groupby('Rango', observed=False)['class'].mean()*100).round(2)); print('\n5. Tasa de éxito por versión:\n', (df.groupby('Booster Version Category')['class'].mean()*100).sort_values(ascending=False).round(2))"
+
+python3.11 -c "import pandas as pd; df=pd.read_csv('spacex_launch_dash.csv'); df['Payload Range']=pd.cut(df['Payload Mass (kg)'], bins=[-1,1000,5000,10000,15000,20000,25000,30000,35000,40000,45000,50000,55000,60000]); print(df.groupby('Payload Range', observed=False).agg(Launches=('class','count'), Successes=('class','sum'), Success_Rate=('class','mean')).assign(Success_Rate=lambda x:(x['Success_Rate']*100).round(2)).to_string())"
